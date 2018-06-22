@@ -1,0 +1,50 @@
+---
+# tasks file for openstack-securitygroup-grapher
+
+# 1 - get instances information
+# 2 - get security group and rules information
+
+- name: verify needed variables
+  assert:
+    that: "{{ item }} is defined"
+    msg: "{{ item }} need to be defined and must not be empty"
+  with_items:
+    - osggrapherCloudInfra
+
+- name: verify if dot is installed
+  shell: "dot --help"
+  ignore_errors: true
+  register: osggraphercmd_out
+
+- name: alert if dot is not installed
+  assert:
+    that: not osggraphercmd_out.rc.failed
+    msg: "dot (from graphviz) has to be installed to use this role"
+
+- name: Get instances information
+  os_server_facts:
+    validate_certs: false
+    cloud: "{{ osggrapherCloudInfra }}"
+  register: instances
+  tags: instance
+  when: osggrapherShowInstances
+
+- name: Get security groups and rules
+  os_security_groups_facts:
+    validate_certs: false
+    cloud: "{{ osggrapherCloudInfra }}"
+  register: sg_rules
+  tags: security_groups
+
+- name: debug sg sg_rules
+  debug:
+    var: sg_rules
+    verbosity: 3
+
+- name: export sg graph
+  template:
+    src: fullsg.dot.j2
+    dest: "{{ osggrapherDotFileToRender }}"
+
+- name: render graph
+  shell: "dot -Tpng -o{{ osggrapherFileToRender}} {{ osggrapherDotFileToRender }}"

@@ -1,0 +1,47 @@
+digraph G {
+  rankdir={{ osggrapherRankdir }};
+{% if osggrapherShowInstances %}
+{%    for i in instances.ansible_facts.openstack_servers %}
+  "{{ i.name }}" [shape=record,label="{ {{ i.name }} |{ {% for sg in i.security_groups %} {% if loop.index > 1%}|{% endif %} <'{{ sg.name }}'> {{ sg.name }} {% endfor %} }}"];
+{%    endfor %}
+{% endif %}
+{% for sg in sg_rules.ansible_facts.openstack_security_groups %}
+{%     if sg.name != "default" or (sg.name == "default" and osggrapherShowDefault) %}
+{%        for r in sg.security_group_rules %}
+{%            if r.protocol %}
+{%               set MyProtocol = r.protocol %}
+{%            else %}
+{%               set MyProtocol = "any" %}
+{%            endif %}
+{%            if r.port_range_max %}
+{%               if r.port_range_max != r.port_range_min %}
+{%                  set MyPortRange = r.port_range_max|string + "-" + r.port_range_min|string %}
+{%               else %}
+{%                  set MyPortRange = r.port_range_max %}
+{%               endif %}
+{%            else %}
+{%               set MyPortRange = "any" %}
+{%            endif %}
+{%            if r.direction == "egress" %}
+{%               if r.remote_ip_prefix %}
+  "{{ r.remote_ip_prefix }}" -> "{{ sg.name }}" [arrowhead=inv,color=red,label="OUT: {{ r.ethertype }} {{ MyProtocol }} {{ MyPortRange }}"];
+{%               endif %}
+{%               if r.remote_group_id %}
+  "{{ sg_rules.ansible_facts.openstack_security_groups | selectattr('id', 'equalto', r.remote_group_id) | list | map(attribute='name') | first }}" -> "{{ sg.name }}" [arrowhead=inv,color=red,label="OUT: {{ r.ethertype }} {{ MyProtocol }} {{ MyPortRange }}"];
+{%               endif %}
+{%               if not r.remote_ip_prefix and not r.remote_group_id %}
+  "0.0.0.0/0" -> "{{ sg.name }}" [arrowhead=inv,color=red,label="OUT: {{ r.ethertype }} {{ MyProtocol }} {{ MyPortRange }}"];
+{%               endif %}
+{%            endif %}
+{%            if r.direction == "ingress" %}
+{%               if r.remote_ip_prefix %}
+  "{{ r.remote_ip_prefix }}" -> "{{ sg.name }}" [arrowhead=normal,color=blue,label="IN: {{ r.ethertype }} {{ MyProtocol }} {{ MyPortRange }}"];
+{%               endif %}
+{%               if r.remote_group_id %}
+  "{{ sg_rules.ansible_facts.openstack_security_groups | selectattr('id', 'equalto', r.remote_group_id) | list | map(attribute='name') | first }}" -> "{{ sg.name }}" [arrowhead=normal,color=blue,label="IN: {{ r.ethertype }} {{ MyProtocol }} {{ MyPortRange }}"];
+{%               endif %}
+{%            endif %}
+{%        endfor %}
+{%     endif %}
+{% endfor %}
+}

@@ -1,0 +1,20 @@
+---
+# defaults file for orange.cloud-grapher
+
+# do you want to see default security group
+osggrapherShowDefault: false
+
+# do you want to see instances with their security groups
+osggrapherShowInstances: false
+
+# see https://www.graphviz.org/doc/info/attrs.html#d:rankdir
+# possible values:
+# LR, left to right
+# RL, right to left
+# TB, top to bottom
+# BT, bottom to top
+osggrapherRankdir: "LR"
+
+osggrapherDotFileToRender: "./CloudGrapher.dot"
+
+osggrapherFileToRender: "./CloudGrapher.png"
