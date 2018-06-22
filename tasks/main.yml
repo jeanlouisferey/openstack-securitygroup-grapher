@@ -11,16 +11,6 @@
   with_items:
     - osggrapherCloudInfra
 
-- name: verify if dot is installed
-  shell: "dot --help"
-  ignore_errors: true
-  register: osggraphercmd_out
-
-- name: alert if dot is not installed
-  assert:
-    that: not osggraphercmd_out.rc.failed
-    msg: "dot (from graphviz) has to be installed to use this role"
-
 - name: Get instances information
   os_server_facts:
     validate_certs: false
