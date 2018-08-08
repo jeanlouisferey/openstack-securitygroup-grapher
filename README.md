@@ -65,9 +65,9 @@ With osggrapherShowDefault: true, you'll have on your graph all the SGs, include
 
 ### osggrapherShowInstances
 
-With osggrapherShowInstances: true, you'll have on your graph all the instances (VM) with SGs used by these instances.
+With osggrapherShowInstances: true, you'll have on your graph all the instances (VM) within SGs used by these instances.
 
-![Example](Instances.jpg)
+![Example](Instances.png)
 
 ### osggrapherRankdir
 
