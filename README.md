@@ -4,7 +4,7 @@ This ansible role gets information from an openstack tenant and generate a [grap
 
 ## Requirements
 
-Shade library needs to be installed, as that is required by the OpenStack Ansible modules.
+[Shade](https://docs.openstack.org/shade/latest/) library needs to be installed, as that is required by the OpenStack Ansible modules.
 
 To render (i.e. to draw and obtain a graphic file), Graphviz needs to be installed.
 
