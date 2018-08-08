@@ -18,3 +18,5 @@ osggrapherRankdir: "LR"
 osggrapherDotFileToRender: "./CloudGrapher.dot"
 
 osggrapherFileToRender: "./CloudGrapher.png"
+
+osggrapherServerLabel: "Servers"

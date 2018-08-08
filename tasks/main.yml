@@ -25,7 +25,6 @@
   os_server_facts:
     validate_certs: false
     cloud: "{{ osggrapherCloudInfra }}"
-  register: instances
   tags: instance
   when: osggrapherShowInstances
 
@@ -33,17 +32,11 @@
   os_security_groups_facts:
     validate_certs: false
     cloud: "{{ osggrapherCloudInfra }}"
-  register: sg_rules
   tags: security_groups
-
-- name: debug sg sg_rules
-  debug:
-    var: sg_rules
-    verbosity: 3
 
 - name: export sg graph
   template:
-    src: fullsg.dot.j2
+    src: fullsg-instances.dot.j2
     dest: "{{ osggrapherDotFileToRender }}"
 
 - name: render graph

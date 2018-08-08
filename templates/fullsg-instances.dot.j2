@@ -1,11 +1,28 @@
 digraph G {
+  graph [fontname = "helvetica"];
+  node [fontname = "helvetica"];
+  edge [fontname = "helvetica"];
   rankdir={{ osggrapherRankdir }};
 {% if osggrapherShowInstances %}
-{%    for i in instances.ansible_facts.openstack_servers %}
-  "{{ i.name }}" [shape=record,label="{ {{ i.name }} |{ {% for sg in i.security_groups %} {% if loop.index > 1%}|{% endif %} <'{{ sg.name }}'> {{ sg.name }} {% endfor %} }}"];
+{%    for sg in openstack_security_groups %}
+{%        if sg.name != "default" or (sg.name == "default" and osggrapherShowDefault) %}
+  "{{ sg.name }}"
+  [
+      shape = record
+      label = <<table border="0" cellspacing="0">
+                  <tr><td ><b>{{ sg.name }}</b></td></tr>
+                  <tr><td ><i>Servers</i></td></tr>
+{%           for MyServer in openstack_servers %}
+{%               if MyServer.security_groups | selectattr('name','equalto', sg.name) | list | first is defined %}
+                  <tr><td border="1" bgcolor="gray">{{ MyServer.name }}</td></tr>
+{%               endif %}
+{%           endfor %}
+              </table>>
+  ]
+{%        endif %}
 {%    endfor %}
 {% endif %}
-{% for sg in sg_rules.ansible_facts.openstack_security_groups %}
+{% for sg in openstack_security_groups %}
 {%     if sg.name != "default" or (sg.name == "default" and osggrapherShowDefault) %}
 {%        for r in sg.security_group_rules %}
 {%            if r.protocol %}
@@ -27,7 +44,7 @@ digraph G {
   "{{ r.remote_ip_prefix }}" -> "{{ sg.name }}" [arrowhead=inv,color=red,label="OUT: {{ r.ethertype }} {{ MyProtocol }} {{ MyPortRange }}"];
 {%               endif %}
 {%               if r.remote_group_id %}
-  "{{ sg_rules.ansible_facts.openstack_security_groups | selectattr('id', 'equalto', r.remote_group_id) | list | map(attribute='name') | first }}" -> "{{ sg.name }}" [arrowhead=inv,color=red,label="OUT: {{ r.ethertype }} {{ MyProtocol }} {{ MyPortRange }}"];
+  "{{ openstack_security_groups | selectattr('id', 'equalto', r.remote_group_id) | list | map(attribute='name') | first }}" -> "{{ sg.name }}" [arrowhead=inv,color=red,label="OUT: {{ r.ethertype }} {{ MyProtocol }} {{ MyPortRange }}"];
 {%               endif %}
 {%               if not r.remote_ip_prefix and not r.remote_group_id %}
   "0.0.0.0/0" -> "{{ sg.name }}" [arrowhead=inv,color=red,label="OUT: {{ r.ethertype }} {{ MyProtocol }} {{ MyPortRange }}"];
@@ -38,7 +55,7 @@ digraph G {
   "{{ r.remote_ip_prefix }}" -> "{{ sg.name }}" [arrowhead=normal,color=blue,label="IN: {{ r.ethertype }} {{ MyProtocol }} {{ MyPortRange }}"];
 {%               endif %}
 {%               if r.remote_group_id %}
-  "{{ sg_rules.ansible_facts.openstack_security_groups | selectattr('id', 'equalto', r.remote_group_id) | list | map(attribute='name') | first }}" -> "{{ sg.name }}" [arrowhead=normal,color=blue,label="IN: {{ r.ethertype }} {{ MyProtocol }} {{ MyPortRange }}"];
+  "{{ openstack_security_groups | selectattr('id', 'equalto', r.remote_group_id) | list | map(attribute='name') | first }}" -> "{{ sg.name }}" [arrowhead=normal,color=blue,label="IN: {{ r.ethertype }} {{ MyProtocol }} {{ MyPortRange }}"];
 {%               endif %}
 {%            endif %}
 {%        endfor %}
