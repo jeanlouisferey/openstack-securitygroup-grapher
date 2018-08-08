@@ -18,6 +18,7 @@ To render (i.e. to draw and obtain a graphic file), Graphviz needs to be install
 | osggrapherRankdir | See <https://www.graphviz.org/doc/info/attrs.html#d:rankdir>, default value: LR |
 | osggrapherDotFileToRender | Path and name of generated dot file , default value: "./CloudGrapher.dot" |
 | osggrapherFileToRender | Path and name of generated image file, default value: "./CloudGrapher.png" |
+| osggrapherServerLabel | Title of instances section in security group boxes used when osggrapherShowInstances = true, default value: "Servers" |
 
 ## Example Playbook
 
