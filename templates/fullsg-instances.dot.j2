@@ -12,7 +12,7 @@ digraph G {
       label = <<table border="0" cellspacing="0">
                   <tr><td ><b>{{ sg.name }}</b></td></tr>
                   <tr><td ><i>Servers</i></td></tr>
-{%           for MyServer in openstack_servers %}
+{%           for MyServer in result.openstack_servers %}
 {%               if MyServer.security_groups | selectattr('name','equalto', sg.name) | list | first is defined %}
                   <tr><td border="1" bgcolor="gray">{{ MyServer.name }}</td></tr>
 {%               endif %}
