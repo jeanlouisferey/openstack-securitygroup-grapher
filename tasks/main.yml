@@ -26,7 +26,15 @@
     cloud: "{{ osggrapherCloudInfra }}"
   register: instances
   tags: instances
-  when: osggrapherShowInstances
+  when: osggrapherShowInstances and osggrapherFilter == ""
+
+- name: Get instances information with filter
+  openstack.cloud.server_info:
+    cloud: "{{ osggrapherCloudInfra }}"
+    server: "{{ osggrapherFilter }}*"
+  register: instances_filtered
+  tags: instance
+  when: osggrapherShowInstances and osggrapherFilter != ""
 
 - name: Get security groups and rules
   openstack.cloud.security_group_info:
@@ -34,10 +42,30 @@
   register: security_groups
   tags: security_groups
 
-- name: export sg graph
+- name: export sg graph without interfaces
   template:
     src: fullsg-instances.dot.j2
     dest: "{{ osggrapherDotFileToRender }}"
+  when: osggrapherFilter == "" and not osggrapherShowInterfaces
+
+- name: export sg graph with filter without interfaces
+  template:
+    src: fullsg-instances-with-filter.dot.j2
+    dest: "{{ osggrapherDotFileToRender }}"
+  when: osggrapherFilter != "" and not osggrapherShowInterfaces
+
+# - name: export sg graph with interfaces without instances
+#   template:
+#     src: fullsg-interfaces.dot.j2
+#     dest: "{{ osggrapherDotFileToRender }}"
+#   when: osggrapherFilter == "" and not osggrapherShowInstances
+
+# - name: export sg graph with filter with interfaces without instances
+#   template:
+#     src: fullsg-interfaces-with-filter.dot.j2
+#     dest: "{{ osggrapherDotFileToRender }}"
+#   when: osggrapherFilter != "" and not osggrapherShowInstances
+
 
 - name: export csv file
   template:

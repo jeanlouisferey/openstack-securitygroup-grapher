@@ -13,19 +13,29 @@ The below requirements are needed on the host that executes this module.
 
 ## Role Variables
 
-| Variable | Content |
-| --- | --- |
-| **osggrapherCloudInfra** | Name of cloud infrastructure (defined in clouds.yml) where your tenant is. (**mandatory**) |
-| osggrapherShowDefault | Do you want to see default security group, default value: false |
-| osggrapherShowInstances | Do you want to see instances with their security groups, default value: false |
-| osggrapherRankdir | See <https://www.graphviz.org/doc/info/attrs.html#d:rankdir>, default value: LR |
-| osggrapherDotFileToRender | Path and name of generated dot file , default value: "./CloudGrapher.dot" |
-| osggrapherFileToRender | Path and name of generated image file, default value: "./CloudGrapher.png" |
-| osggrapherRenderCsvFile |bool|Do you want to  generate a [csv file](doc/CloudGrapher.csv) of SG and SG Rules|`'false'`|
-| osggrapherCsvFileToRender |string|Path and name of generated csv file|`'./CloudGrapher.csv'`|
-| osggrapherRenderMdFile |bool|Do you want to  generate a [markdown file](doc/CloudGrapher.md) of SG and SG Rules|`'false'`|
-| osggrapherMdFileToRender |string|Path and name of generated markdown file|`'./CloudGrapher.md'`|
-| osggrapherServerLabel | Title of instances section in security group boxes used when osggrapherShowInstances = true, default value: "Servers" |
+|Name|Type|Description|Default|
+|----|----|-----------|-------|
+|`oosksggrapherCloudInfra`|string|Name of cloud infrastructure (defined in [clouds.yml](https://docs.openstack.org/python-openstackclient/pike/configuration/index.html)) where your tenant is. (**mandatory**)|`'no default value'`|
+|`oosksggrapherShowDefault`|bool|Do you want to see default security group|`'false'`|
+|`oosksggrapherShowInstances`|bool|Do you want to see instances with their security groups|`'false'`|
+|`oosksggrapherShowInterfaces`|bool|Do you want to see interfaces with their security groups|`'false'`|
+|`oosksggrapherShowEgressAnyAnyRules`|bool|Do you want to show egress ANY ANY rules|`'true'`|
+|`oosksggrapherRankdir`|string|See <https://www.graphviz.org/doc/info/attrs.html#d:rankdir>|`'LR'`|
+|`oosksggrapherDotFileToRender`|string|Path and name of generated dot file|`'./CloudGrapher.dot'`|
+|`oosksggrapherFileToRender`|string|Path and name of generated image file|`'./CloudGrapher.png'`|
+|`oosksggrapherRenderCsvFile`|bool|Do you want to  generate a [csv file](doc/CloudGrapher.csv) of SG and SG Rules|`'false'`|
+|`oosksggrapherCsvFileToRender`|string|Path and name of generated csv file|`'./CloudGrapher.csv'`|
+|`oosksggrapherRenderMdFile`|bool|Do you want to  generate a [markdown file](doc/CloudGrapher.md) of SG and SG Rules|`'false'`|
+|`oosksggrapherMdFileToRender`|string|Path and name of generated markdown file|`'./CloudGrapher.md'`|
+|`oosksggrapherFilter`|string|String (begin with) to filter instances and security groups name|`'no default value'`|
+
+ :point_right: If you are in a mutualized tenant, you'll probably want to filter information.
+
+ To do that, you will have to use the oosksggrapherFilter parameter. For instance, if all your Openstack resources names begin with the same string, for instance WEB, you should probably have security groups named WEB-SG-Something, and virtual machines named WEB-SERVER-Something, then you can filter on your resources with:
+
+ ```yaml
+ oosksggrapherFilter: WEB
+ ```
 
 ## Example Playbook
 
@@ -56,25 +66,25 @@ The arrow head is always on the security group which contains the rule represent
 
 *It shows a tenant with several security groups corresponding to the different functions of the machines present in the project.*
 
-![Example](CloudGrapher.png)
+![Example](doc/CloudGrapher.png)
 
 ### Simpler example
 
 *It shows in particular a SG that accepts any input from any source and a SG that allows any output to any destination.*
 
-![Example](SimpleGraph.png)
+![Example](doc/SimpleGraph.png)
 
 ### osggrapherShowDefault
 
 With osggrapherShowDefault: true, you'll have on your graph all the SGs, included the default Openstack SG:
 
-![Example](DefaultSG.jpg)
+![Example](doc/DefaultSG.jpg)
 
 ### osggrapherShowInstances
 
 With osggrapherShowInstances: true, you'll have on your graph all the instances (VM) within SGs used by these instances.
 
-![Example](Instances.png)
+![Example](doc/Instances.png)
 
 ### osggrapherRankdir
 
@@ -82,7 +92,7 @@ With osggrapherRankdir: LR, left to right, RL, right to left, TB, top to bottom,
 
 #### LR example
 
-![Example](LR.png)
+![Example](doc/LR.png)
 
 #### TB example
 

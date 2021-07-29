@@ -1,0 +1,73 @@
+digraph G {
+  graph [fontname = "helvetica"];
+  node [fontname = "helvetica"];
+  edge [fontname = "helvetica"];
+  rankdir={{ osggrapherRankdir }};
+{% if osggrapherShowInstances %}
+{%    for sg in security_groups.security_groups %}
+{%        if sg.name.startswith(osggrapherFilter) or (sg.name == "default" and osggrapherShowDefault) %}
+{%           if sg.name != "default" or (sg.name == "default" and osggrapherShowDefault) %}
+  "{{ sg.name }}"
+  [
+      shape = record
+      label = <<table border="0" cellspacing="0">
+                  <tr><td ><b>{{ sg.name }}</b></td></tr>
+                  <tr><td ><i>Servers</i></td></tr>
+{%              for MyServer in instances_filtered.openstack_servers %}
+{%                  if MyServer.security_groups | selectattr('name','equalto', sg.name) | list | first is defined %}
+                  <tr><td border="1" bgcolor="gray">{{ MyServer.name }}</td></tr>
+{%                  endif %}
+{%              endfor %}
+              </table>>
+  ]
+{%           endif %}
+{%        endif %}
+{%    endfor %}
+{% endif %}
+{% for sg in security_groups.security_groups %}
+{%     if sg.name.startswith(osggrapherFilter) or (sg.name == "default" and osggrapherShowDefault) %}
+{%        if sg.name != "default" or (sg.name == "default" and osggrapherShowDefault) %}
+{%           for r in sg.security_group_rules %}
+{%               if r.protocol %}
+{%                  set MyProtocol = r.protocol %}
+{%               else %}
+{%                  set MyProtocol = "any" %}
+{%               endif %}
+{%               if r.port_range_max %}
+{%                  if r.port_range_max != r.port_range_min %}
+{%                     set MyPortRange = r.port_range_max|string + "-" + r.port_range_min|string %}
+{%                  else %}
+{%                     set MyPortRange = r.port_range_max %}
+{%                  endif %}
+{%               else %}
+{%                  set MyPortRange = "any" %}
+{%               endif %}
+{%               if r.direction == "egress" %}
+{%                  if r.remote_ip_prefix %}
+  "{{ r.remote_ip_prefix }}" -> "{{ sg.name }}" [arrowhead=inv,color=red,label="OUT: {{ r.ethertype }} {{ MyProtocol }} {{ MyPortRange }}"];
+{%                  endif %}
+{%                  if r.remote_group_id %}
+  "{{ security_groups.security_groups | selectattr('id', 'equalto', r.remote_group_id) | list | map(attribute='name') | first }}" -> "{{ sg.name }}" [arrowhead=inv,color=red,label="OUT: {{ r.ethertype }} {{ MyProtocol }} {{ MyPortRange }}"];
+{%                  endif %}
+{%                  if r.remote_ip_prefix is none and r.remote_group_id is none %}
+{%                     if osggrapherShowEgressAnyAnyRules %}
+  "0.0.0.0/0" -> "{{ sg.name }}" [arrowhead=inv,color=red,label="OUT: {{ r.ethertype }} {{ MyProtocol }} {{ MyPortRange }}"];
+{%                     endif %}
+{%                  endif %}
+{%               endif %}
+{%               if r.direction == "ingress" %}
+{%                  if r.remote_ip_prefix %}
+  "{{ r.remote_ip_prefix }}" -> "{{ sg.name }}" [arrowhead=normal,color=blue,label="IN: {{ r.ethertype }} {{ MyProtocol }} {{ MyPortRange }}"];
+{%                  endif %}
+{%                  if r.remote_group_id %}
+  "{{ security_groups.security_groups | selectattr('id', 'equalto', r.remote_group_id) | list | map(attribute='name') | first }}" -> "{{ sg.name }}" [arrowhead=normal,color=blue,label="IN: {{ r.ethertype }} {{ MyProtocol }} {{ MyPortRange }}"];
+{%                  endif %}
+{%                  if r.remote_ip_prefix is none and r.remote_group_id is none %}
+  "0.0.0.0/0" -> "{{ sg.name }}" [arrowhead=normal,color=blue,label="IN: {{ r.ethertype }} {{ MyProtocol }} {{ MyPortRange }}"];
+{%                  endif %}
+{%               endif %}
+{%           endfor %}
+{%        endif %}
+{%     endif %}
+{% endfor %}
+}

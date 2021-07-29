@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - this changelog file
 - New markdown and csv output
+- Abbility to filter instances and security groups name
+- Documentation of new features
 
 ### Changed
 - Ansible 2.9 compatibility
