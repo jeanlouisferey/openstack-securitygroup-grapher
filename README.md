@@ -21,6 +21,10 @@ The below requirements are needed on the host that executes this module.
 | osggrapherRankdir | See <https://www.graphviz.org/doc/info/attrs.html#d:rankdir>, default value: LR |
 | osggrapherDotFileToRender | Path and name of generated dot file , default value: "./CloudGrapher.dot" |
 | osggrapherFileToRender | Path and name of generated image file, default value: "./CloudGrapher.png" |
+| osggrapherRenderCsvFile |bool|Do you want to  generate a [csv file](doc/CloudGrapher.csv) of SG and SG Rules|`'false'`|
+| osggrapherCsvFileToRender |string|Path and name of generated csv file|`'./CloudGrapher.csv'`|
+| osggrapherRenderMdFile |bool|Do you want to  generate a [markdown file](doc/CloudGrapher.md) of SG and SG Rules|`'false'`|
+| osggrapherMdFileToRender |string|Path and name of generated markdown file|`'./CloudGrapher.md'`|
 | osggrapherServerLabel | Title of instances section in security group boxes used when osggrapherShowInstances = true, default value: "Servers" |
 
 ## Example Playbook

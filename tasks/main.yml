@@ -28,24 +28,28 @@
   tags: instances
   when: osggrapherShowInstances
 
-# - debug:
-#     msg: "{{ item.name }}"
-#   with_items: "{{ instances.openstack_servers }}"
-
 - name: Get security groups and rules
   openstack.cloud.security_group_info:
     cloud: "{{ osggrapherCloudInfra }}"
   register: security_groups
   tags: security_groups
 
-# - debug:
-#     msg: "{{ item.name }}"
-#   with_items: "{{ security_groups.security_groups }}"
-
 - name: export sg graph
   template:
     src: fullsg-instances.dot.j2
     dest: "{{ osggrapherDotFileToRender }}"
+
+- name: export csv file
+  template:
+    src: flowmatrix.csv.j2
+    dest: "{{ osggrapherCsvFileToRender }}"
+  when: osggrapherRenderCsvFile
+
+- name: export markdown file
+  template:
+    src: flowmatrix.md.j2
+    dest: "{{ osggrapherMdFileToRender }}"
+  when: osggrapherRenderMdFile
 
 - name: render graph
   shell: "dot -Tpng -o{{ osggrapherFileToRender}} {{ osggrapherDotFileToRender }}"
