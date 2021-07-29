@@ -86,6 +86,16 @@ With osggrapherShowInstances: true, you'll have on your graph all the instances 
 
 ![Example](doc/Instances.png)
 
+## osggrapherShowInterfaces
+
+With osggrapherShowInterfaces: true, you'll have on your graph all the network interfaces (with their ip addresses) using each security groups.
+
+This visualization is usefull when your instances have multiple network interfaces and you use different security group on different network interfaces.
+
+Obviously, this visualization is easier to read when you take care to name your network interfaces with human readable names.
+
+![Example](doc/interfaces.png)
+
 ### osggrapherRankdir
 
 With osggrapherRankdir: LR, left to right, RL, right to left, TB, top to bottom, BT, bottom to top, you can change the way to draw the graph.
