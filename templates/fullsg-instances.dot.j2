@@ -46,8 +46,10 @@ digraph G {
 {%               if r.remote_group_id %}
   "{{ security_groups.security_groups | selectattr('id', 'equalto', r.remote_group_id) | list | map(attribute='name') | first }}" -> "{{ sg.name }}" [arrowhead=inv,color=red,label="OUT: {{ r.ethertype }} {{ MyProtocol }} {{ MyPortRange }}"];
 {%               endif %}
-{%               if not r.remote_ip_prefix and not r.remote_group_id %}
+{%               if r.remote_ip_prefix is none and r.remote_group_id is none %}
+{%                  if osggrapherShowEgressAnyAnyRules %}
   "0.0.0.0/0" -> "{{ sg.name }}" [arrowhead=inv,color=red,label="OUT: {{ r.ethertype }} {{ MyProtocol }} {{ MyPortRange }}"];
+{%                  endif %}
 {%               endif %}
 {%            endif %}
 {%            if r.direction == "ingress" %}

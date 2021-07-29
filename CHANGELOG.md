@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - this changelog file
 - New markdown and csv output
 - Abbility to filter instances and security groups name
+- Abbility to show or not egress ANY ANY rules
 - Documentation of new features
 
 ### Changed
