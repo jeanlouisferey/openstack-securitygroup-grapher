@@ -19,20 +19,28 @@
 - name: alert if dot is not installed
   assert:
     that: osggraphercmd_out.rc == 0
-    msg: "dot (from graphviz) has to be installed to use this role"  
+    msg: "dot (from graphviz) has to be installed to use this role"
 
 - name: Get instances information
-  os_server_facts:
-    validate_certs: false
+  openstack.cloud.server_info:
     cloud: "{{ osggrapherCloudInfra }}"
-  tags: instance
+  register: instances
+  tags: instances
   when: osggrapherShowInstances
 
+# - debug:
+#     msg: "{{ item.name }}"
+#   with_items: "{{ instances.openstack_servers }}"
+
 - name: Get security groups and rules
-  os_security_groups_facts:
-    validate_certs: false
+  openstack.cloud.security_group_info:
     cloud: "{{ osggrapherCloudInfra }}"
+  register: security_groups
   tags: security_groups
+
+# - debug:
+#     msg: "{{ item.name }}"
+#   with_items: "{{ security_groups.security_groups }}"
 
 - name: export sg graph
   template:
