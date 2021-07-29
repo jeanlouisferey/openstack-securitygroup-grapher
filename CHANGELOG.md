@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New markdown and csv output
 - Abbility to filter instances and security groups name
 - Abbility to show or not egress ANY ANY rules
+- Abbility to graph security groups attached to interfaces (useful for instances with multiple ports with different security groups on each ports)
 - Documentation of new features
 
 ### Changed

@@ -18,7 +18,7 @@ The below requirements are needed on the host that executes this module.
 |`osggrapherCloudInfra`|string|Name of cloud infrastructure (defined in [clouds.yml](https://docs.openstack.org/python-openstackclient/pike/configuration/index.html)) where your tenant is. (**mandatory**)|`no default value`|
 |`osggrapherShowDefault`|bool|Do you want to see default security group|`false`|
 |`osggrapherShowInstances`|bool|Do you want to see instances with their security groups|`false`|
-|`osggrapherShowInterfaces`|bool|Do you want to see interfaces with their security groups|`false`|
+|`osggrapherShowInterfaces`|bool|Do you want to see interfaces with their security groups. Useful with instances with multiple ports with different security groups on each. Easier to read when ports have an name instead an id|`false`|
 |`osggrapherShowEgressAnyAnyRules`|bool|Do you want to show egress ANY ANY rules|`true`|
 |`osggrapherRankdir`|string|See <https://www.graphviz.org/doc/info/attrs.html#d:rankdir>|`LR`|
 |`osggrapherDotFileToRender`|string|Path and name of generated dot file|`./CloudGrapher.dot`|
@@ -31,7 +31,7 @@ The below requirements are needed on the host that executes this module.
 
  :point_right: If you are in a mutualized tenant, you'll probably want to filter information.
 
- To do that, you will have to use the osggrapherFilter parameter. For instance, if all your Openstack resources names begin with the same string, for instance WEB, you should probably have security groups named WEB-SG-Something, and virtual machines named WEB-SERVER-Something, then you can filter on your resources with:
+ To do that, you will have to use the `osggrapherFilter` parameter. For instance, if all your Openstack resources names begin with the same string, for instance WEB, you should probably have security groups named WEB-SG-Something, and virtual machines named WEB-SERVER-Something, then you can filter on your resources with:
 
  ```yaml
  osggrapherFilter: WEB
