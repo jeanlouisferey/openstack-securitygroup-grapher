@@ -1,0 +1,41 @@
+"Security group";"Direction";"IP type";"Protocol";"Port";"Remote partner"
+{% for sg in security_groups.security_groups | sort(attribute='name') %}
+{%        for r in sg.security_group_rules %}
+{%            if r.protocol %}
+{%               set MyProtocol = r.protocol %}
+{%            else %}
+{%               set MyProtocol = "any" %}
+{%            endif %}
+{%            if r.port_range_max %}
+{%               if r.port_range_max != r.port_range_min %}
+{%                  set MyPortRange = r.port_range_max|string + "-" + r.port_range_min|string %}
+{%               else %}
+{%                  set MyPortRange = r.port_range_max %}
+{%               endif %}
+{%            else %}
+{%               set MyPortRange = "any" %}
+{%            endif %}
+{%            if r.direction == "egress" %}
+{%               if r.remote_ip_prefix %}
+"{{ sg.name }}";"{{ r.direction}}";"{{ r.ethertype }}";"{{ MyProtocol }}";"{{ MyPortRange }}";"{{ r.remote_ip_prefix }}"
+{%               endif %}
+{%               if r.remote_group_id %}
+"{{ sg.name }}";"{{ r.direction}}";"{{ r.ethertype }}";"{{ MyProtocol }}";"{{ MyPortRange }}";"{{ security_groups.security_groups | selectattr('id', 'equalto', r.remote_group_id) | list | map(attribute='name') | first }}"
+{%               endif %}
+{%               if r.remote_ip_prefix is none and r.remote_group_id is none %}
+"{{ sg.name }}";"{{ r.direction}}";"{{ r.ethertype }}";"{{ MyProtocol }}";"{{ MyPortRange }}";"0.0.0.0/0"
+{%               endif %}
+{%            endif %}
+{%            if r.direction == "ingress" %}
+{%               if r.remote_ip_prefix %}
+"{{ sg.name }}";"{{ r.direction}}";"{{ r.ethertype }}";"{{ MyProtocol }}";"{{ MyPortRange }}";"{{ r.remote_ip_prefix }}"
+{%               endif %}
+{%               if r.remote_group_id %}
+"{{ sg.name }}";"{{ r.direction}}";"{{ r.ethertype }}";"{{ MyProtocol }}";"{{ MyPortRange }}";"{{ security_groups.security_groups | selectattr('id', 'equalto', r.remote_group_id) | list | map(attribute='name') | first }}"
+{%               endif %}
+{%               if r.remote_ip_prefix is none and r.remote_group_id is none %}
+"{{ sg.name }}";"{{ r.direction}}";"{{ r.ethertype }}";"{{ MyProtocol }}";"{{ MyPortRange }}";"0.0.0.0/0"
+{%               endif %}
+{%            endif %}
+{%        endfor %}
+{% endfor %}

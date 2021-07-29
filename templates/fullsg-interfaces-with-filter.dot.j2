@@ -3,26 +3,35 @@ digraph G {
   node [fontname = "helvetica"];
   edge [fontname = "helvetica"];
   rankdir={{ osggrapherRankdir }};
-{% if osggrapherShowInstances %}
+{% if osggrapherShowInterfaces %}
 {%    for sg in security_groups.security_groups %}
+{%        if sg.name.startswith(osggrapherFilter) or (sg.name == "default" and osggrapherShowDefault) %}
 {%        if sg.name != "default" or (sg.name == "default" and osggrapherShowDefault) %}
   "{{ sg.name }}"
   [
       shape = record
       label = <<table border="0" cellspacing="0">
                   <tr><td ><b>{{ sg.name }}</b></td></tr>
-                  <tr><td ><i>Servers</i></td></tr>
-{%           for MyServer in instances.openstack_servers %}
-{%               if MyServer.security_groups | selectattr('name','equalto', sg.name) | list | first is defined %}
-                  <tr><td border="1" bgcolor="gray">{{ MyServer.name }}</td></tr>
-{%               endif %}
+                  <tr><td ><i>Interfaces</i></td></tr>
+{%           for MyInterface in interfaces.openstack_ports %}
+{%               for id in MyInterface.security_groups %}
+{%                   if id == sg.id %}
+{%                      if MyInterface.name == '' %}
+                  <tr><td border="1" bgcolor="gray">{{ MyInterface.id }}: {{ MyInterface.fixed_ips[0].ip_address }}</td></tr>
+{%                      else %}
+                  <tr><td border="1" bgcolor="gray">{{ MyInterface.name }}: {{ MyInterface.fixed_ips[0].ip_address }}</td></tr>
+{%                      endif %}
+{%                   endif %}
+{%               endfor %}
 {%           endfor %}
               </table>>
   ]
 {%        endif %}
+{%        endif %}
 {%    endfor %}
 {% endif %}
 {% for sg in security_groups.security_groups %}
+{%     if sg.name.startswith(osggrapherFilter) or (sg.name == "default" and osggrapherShowDefault) %}
 {%     if sg.name != "default" or (sg.name == "default" and osggrapherShowDefault) %}
 {%        for r in sg.security_group_rules %}
 {%            if r.protocol %}
@@ -57,10 +66,14 @@ digraph G {
   "{{ r.remote_ip_prefix }}" -> "{{ sg.name }}" [arrowhead=normal,color=blue,label="IN: {{ r.ethertype }} {{ MyProtocol }} {{ MyPortRange }}"];
 {%               endif %}
 {%               if r.remote_group_id %}
-  "{{ security_groups.security_groups| selectattr('id', 'equalto', r.remote_group_id) | list | map(attribute='name') | first }}" -> "{{ sg.name }}" [arrowhead=normal,color=blue,label="IN: {{ r.ethertype }} {{ MyProtocol }} {{ MyPortRange }}"];
+  "{{ security_groups.security_groups | selectattr('id', 'equalto', r.remote_group_id) | list | map(attribute='name') | first }}" -> "{{ sg.name }}" [arrowhead=normal,color=blue,label="IN: {{ r.ethertype }} {{ MyProtocol }} {{ MyPortRange }}"];
+{%               endif %}
+{%               if r.remote_ip_prefix is none and r.remote_group_id is none %}
+  "0.0.0.0/0" -> "{{ sg.name }}" [arrowhead=normal,color=blue,label="IN: {{ r.ethertype }} {{ MyProtocol }} {{ MyPortRange }}"];
 {%               endif %}
 {%            endif %}
 {%        endfor %}
+{%     endif %}
 {%     endif %}
 {% endfor %}
 }

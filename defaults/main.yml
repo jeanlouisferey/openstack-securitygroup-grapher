@@ -4,8 +4,20 @@
 # do you want to see default security group
 osggrapherShowDefault: false
 
+# do you want to show egress ANY ANY rules
+osggrapherShowEgressAnyAnyRules: true
+
 # do you want to see instances with their security groups
 osggrapherShowInstances: false
+
+# do you want to see instances with their security groups
+osggrapherShowInterfaces: false
+
+# do you want to generate the flow mattrix as a csv file
+osggrapherRenderCsvFile: false
+
+# do you want to generate the flow mattrix as a markdown file
+osggrapherRenderMdFile: false
 
 # see https://www.graphviz.org/doc/info/attrs.html#d:rankdir
 # possible values:
@@ -19,4 +31,10 @@ osggrapherDotFileToRender: "./CloudGrapher.dot"
 
 osggrapherFileToRender: "./CloudGrapher.png"
 
-osggrapherServerLabel: "Servers"
+osggrapherCsvFileToRender: "./CloudGrapher.csv"
+
+osggrapherMdFileToRender: "./CloudGrapher.md"
+
+osggrapherCloudInfra: ""
+
+osggrapherFilter: ""

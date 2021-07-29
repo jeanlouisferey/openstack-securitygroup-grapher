@@ -4,21 +4,38 @@ This ansible role gets information from an openstack tenant and generate a [grap
 
 ## Requirements
 
-[Shade](https://docs.openstack.org/shade/latest/) library needs to be installed, as that is required by the OpenStack Ansible modules.
+The below requirements are needed on the host that executes this module.
 
-To render (i.e. to draw and obtain a graphic file), Graphviz needs to be installed.
+* Ansible >= 2.9
+* [openstack.cloud](https://docs.ansible.com/ansible/latest/collections/openstack/cloud/index.html#plugins-in-openstack-cloud) collection
+* :warning: [Openstack-SDK](https://docs.openstack.org/openstacksdk/latest/user/) python library (version >= 0.12.0) needs to be installed, as that is required by the OpenStack Ansible collection.
+* :warning: To render (i.e. to draw and obtain a graphic file), [Graphviz](https://graphviz.gitlab.io/) needs to be installed.
 
 ## Role Variables
 
-| Variable | Content |
-| --- | --- |
-| **osggrapherCloudInfra** | Name of cloud infrastructure (defined in clouds.yml) where your tenant is. (**mandatory**) |
-| osggrapherShowDefault | Do you want to see default security group, default value: false |
-| osggrapherShowInstances | Do you want to see instances with their security groups, default value: false |
-| osggrapherRankdir | See <https://www.graphviz.org/doc/info/attrs.html#d:rankdir>, default value: LR |
-| osggrapherDotFileToRender | Path and name of generated dot file , default value: "./CloudGrapher.dot" |
-| osggrapherFileToRender | Path and name of generated image file, default value: "./CloudGrapher.png" |
-| osggrapherServerLabel | Title of instances section in security group boxes used when osggrapherShowInstances = true, default value: "Servers" |
+|Name|Type|Description|Default|
+|----|----|-----------|-------|
+|`osggrapherCloudInfra`|string|Name of cloud infrastructure (defined in [clouds.yml](https://docs.openstack.org/python-openstackclient/pike/configuration/index.html)) where your tenant is. (**mandatory**)|`no default value`|
+|`osggrapherShowDefault`|bool|Do you want to see default security group|`false`|
+|`osggrapherShowInstances`|bool|Do you want to see instances with their security groups|`false`|
+|`osggrapherShowInterfaces`|bool|Do you want to see interfaces with their security groups. Useful with instances with multiple ports with different security groups on each. Easier to read when ports have an name instead an id|`false`|
+|`osggrapherShowEgressAnyAnyRules`|bool|Do you want to show egress ANY ANY rules|`true`|
+|`osggrapherRankdir`|string|See <https://www.graphviz.org/doc/info/attrs.html#d:rankdir>|`LR`|
+|`osggrapherDotFileToRender`|string|Path and name of generated dot file|`./CloudGrapher.dot`|
+|`osggrapherFileToRender`|string|Path and name of generated image file|`./CloudGrapher.png`|
+|`osggrapherRenderCsvFile`|bool|Do you want to  generate a [csv file](doc/CloudGrapher.csv) of SG and SG Rules|`false`|
+|`osggrapherCsvFileToRender`|string|Path and name of generated csv file|`./CloudGrapher.csv`|
+|`osggrapherRenderMdFile`|bool|Do you want to  generate a [markdown file](doc/CloudGrapher.md) of SG and SG Rules|`false`|
+|`osggrapherMdFileToRender`|string|Path and name of generated markdown file|`./CloudGrapher.md`|
+|`osggrapherFilter`|string|String (begin with) to filter instances and security groups name|`'no default value`|
+
+ :point_right: If you are in a mutualized tenant, you'll probably want to filter information.
+
+ To do that, you will have to use the `osggrapherFilter` parameter. For instance, if all your Openstack resources names begin with the same string, for instance WEB, you should probably have security groups named WEB-SG-Something, and virtual machines named WEB-SERVER-Something, then you can filter on your resources with:
+
+ ```yaml
+ osggrapherFilter: WEB
+ ```
 
 ## Example Playbook
 
@@ -49,25 +66,35 @@ The arrow head is always on the security group which contains the rule represent
 
 *It shows a tenant with several security groups corresponding to the different functions of the machines present in the project.*
 
-![Example](CloudGrapher.png)
+![Example](doc/CloudGrapher.png)
 
 ### Simpler example
 
 *It shows in particular a SG that accepts any input from any source and a SG that allows any output to any destination.*
 
-![Example](SimpleGraph.png)
+![Example](doc/SimpleGraph.png)
 
 ### osggrapherShowDefault
 
 With osggrapherShowDefault: true, you'll have on your graph all the SGs, included the default Openstack SG:
 
-![Example](DefaultSG.jpg)
+![Example](doc/DefaultSG.jpg)
 
 ### osggrapherShowInstances
 
 With osggrapherShowInstances: true, you'll have on your graph all the instances (VM) within SGs used by these instances.
 
-![Example](Instances.png)
+![Example](doc/Instances.png)
+
+## osggrapherShowInterfaces
+
+With osggrapherShowInterfaces: true, you'll have on your graph all the network interfaces (with their ip addresses) using each security groups.
+
+This visualization is usefull when your instances have multiple network interfaces and you use different security group on different network interfaces.
+
+Obviously, this visualization is easier to read when you take care to name your network interfaces with human readable names.
+
+![Example](doc/interfaces.png)
 
 ### osggrapherRankdir
 
@@ -75,7 +102,7 @@ With osggrapherRankdir: LR, left to right, RL, right to left, TB, top to bottom,
 
 #### LR example
 
-![Example](LR.png)
+![Example](doc/LR.png)
 
 #### TB example
 

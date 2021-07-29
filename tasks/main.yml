@@ -4,40 +4,86 @@
 # 1 - get instances information
 # 2 - get security group and rules information
 
-- name: verify needed variables
+- name: Verify needed variables
   assert:
     that: "{{ item }} is defined"
     msg: "{{ item }} need to be defined and must not be empty"
   with_items:
     - osggrapherCloudInfra
 
-- name: verify if dot is installed
+- name: Verify if dot is installed
   shell: "dot -V"
   ignore_errors: true
   register: osggraphercmd_out
 
-- name: alert if dot is not installed
+- name: Alert if dot is not installed
   assert:
     that: osggraphercmd_out.rc == 0
-    msg: "dot (from graphviz) has to be installed to use this role"  
+    msg: "dot (from graphviz) has to be installed to use this role"
 
 - name: Get instances information
-  os_server_facts:
-    validate_certs: false
+  openstack.cloud.server_info:
     cloud: "{{ osggrapherCloudInfra }}"
+  register: instances
+  tags: instances
+  when: osggrapherShowInstances and osggrapherFilter == ""
+
+- name: Get instances information with filter
+  openstack.cloud.server_info:
+    cloud: "{{ osggrapherCloudInfra }}"
+    server: "{{ osggrapherFilter }}*"
+  register: instances_filtered
   tags: instance
-  when: osggrapherShowInstances
+  when: osggrapherShowInstances and osggrapherFilter != ""
+
+- name: Get interfaces information
+  openstack.cloud.port_info:
+    cloud: "{{ osggrapherCloudInfra }}"
+  register: interfaces
+  tags: interfaces
+  when: osggrapherShowInterfaces
 
 - name: Get security groups and rules
-  os_security_groups_facts:
-    validate_certs: false
+  openstack.cloud.security_group_info:
     cloud: "{{ osggrapherCloudInfra }}"
+  register: security_groups
   tags: security_groups
 
-- name: export sg graph
+- name: Export sg graph without interfaces
   template:
     src: fullsg-instances.dot.j2
     dest: "{{ osggrapherDotFileToRender }}"
+  when: osggrapherFilter == "" and not osggrapherShowInterfaces
 
-- name: render graph
+- name: Export sg graph with filter without interfaces
+  template:
+    src: fullsg-instances-with-filter.dot.j2
+    dest: "{{ osggrapherDotFileToRender }}"
+  when: osggrapherFilter != "" and not osggrapherShowInterfaces
+
+- name: Export sg graph with interfaces without instances
+  template:
+    src: fullsg-interfaces.dot.j2
+    dest: "{{ osggrapherDotFileToRender }}"
+  when: osggrapherFilter == "" and not osggrapherShowInstances
+
+- name: Export sg graph with filter with interfaces without instances
+  template:
+    src: fullsg-interfaces-with-filter.dot.j2
+    dest: "{{ osggrapherDotFileToRender }}"
+  when: osggrapherFilter != "" and not osggrapherShowInstances
+
+- name: Export csv file
+  template:
+    src: flowmatrix.csv.j2
+    dest: "{{ osggrapherCsvFileToRender }}"
+  when: osggrapherRenderCsvFile
+
+- name: Export markdown file
+  template:
+    src: flowmatrix.md.j2
+    dest: "{{ osggrapherMdFileToRender }}"
+  when: osggrapherRenderMdFile
+
+- name: Render graph
   shell: "dot -Tpng -o{{ osggrapherFileToRender}} {{ osggrapherDotFileToRender }}"
