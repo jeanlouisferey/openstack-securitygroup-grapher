@@ -15,26 +15,26 @@ The below requirements are needed on the host that executes this module.
 
 |Name|Type|Description|Default|
 |----|----|-----------|-------|
-|`oosksggrapherCloudInfra`|string|Name of cloud infrastructure (defined in [clouds.yml](https://docs.openstack.org/python-openstackclient/pike/configuration/index.html)) where your tenant is. (**mandatory**)|`'no default value'`|
-|`oosksggrapherShowDefault`|bool|Do you want to see default security group|`'false'`|
-|`oosksggrapherShowInstances`|bool|Do you want to see instances with their security groups|`'false'`|
-|`oosksggrapherShowInterfaces`|bool|Do you want to see interfaces with their security groups|`'false'`|
-|`oosksggrapherShowEgressAnyAnyRules`|bool|Do you want to show egress ANY ANY rules|`'true'`|
-|`oosksggrapherRankdir`|string|See <https://www.graphviz.org/doc/info/attrs.html#d:rankdir>|`'LR'`|
-|`oosksggrapherDotFileToRender`|string|Path and name of generated dot file|`'./CloudGrapher.dot'`|
-|`oosksggrapherFileToRender`|string|Path and name of generated image file|`'./CloudGrapher.png'`|
-|`oosksggrapherRenderCsvFile`|bool|Do you want to  generate a [csv file](doc/CloudGrapher.csv) of SG and SG Rules|`'false'`|
-|`oosksggrapherCsvFileToRender`|string|Path and name of generated csv file|`'./CloudGrapher.csv'`|
-|`oosksggrapherRenderMdFile`|bool|Do you want to  generate a [markdown file](doc/CloudGrapher.md) of SG and SG Rules|`'false'`|
-|`oosksggrapherMdFileToRender`|string|Path and name of generated markdown file|`'./CloudGrapher.md'`|
-|`oosksggrapherFilter`|string|String (begin with) to filter instances and security groups name|`'no default value'`|
+|`osggrapherCloudInfra`|string|Name of cloud infrastructure (defined in [clouds.yml](https://docs.openstack.org/python-openstackclient/pike/configuration/index.html)) where your tenant is. (**mandatory**)|`'no default value'`|
+|`osggrapherShowDefault`|bool|Do you want to see default security group|`'false'`|
+|`osggrapherShowInstances`|bool|Do you want to see instances with their security groups|`'false'`|
+|`osggrapherShowInterfaces`|bool|Do you want to see interfaces with their security groups|`'false'`|
+|`osggrapherShowEgressAnyAnyRules`|bool|Do you want to show egress ANY ANY rules|`'true'`|
+|`osggrapherRankdir`|string|See <https://www.graphviz.org/doc/info/attrs.html#d:rankdir>|`'LR'`|
+|`osggrapherDotFileToRender`|string|Path and name of generated dot file|`'./CloudGrapher.dot'`|
+|`osggrapherFileToRender`|string|Path and name of generated image file|`'./CloudGrapher.png'`|
+|`osggrapherRenderCsvFile`|bool|Do you want to  generate a [csv file](doc/CloudGrapher.csv) of SG and SG Rules|`'false'`|
+|`osggrapherCsvFileToRender`|string|Path and name of generated csv file|`'./CloudGrapher.csv'`|
+|`osggrapherRenderMdFile`|bool|Do you want to  generate a [markdown file](doc/CloudGrapher.md) of SG and SG Rules|`'false'`|
+|`osggrapherMdFileToRender`|string|Path and name of generated markdown file|`'./CloudGrapher.md'`|
+|`osggrapherFilter`|string|String (begin with) to filter instances and security groups name|`'no default value'`|
 
  :point_right: If you are in a mutualized tenant, you'll probably want to filter information.
 
- To do that, you will have to use the oosksggrapherFilter parameter. For instance, if all your Openstack resources names begin with the same string, for instance WEB, you should probably have security groups named WEB-SG-Something, and virtual machines named WEB-SERVER-Something, then you can filter on your resources with:
+ To do that, you will have to use the osggrapherFilter parameter. For instance, if all your Openstack resources names begin with the same string, for instance WEB, you should probably have security groups named WEB-SG-Something, and virtual machines named WEB-SERVER-Something, then you can filter on your resources with:
 
  ```yaml
- oosksggrapherFilter: WEB
+ osggrapherFilter: WEB
  ```
 
 ## Example Playbook
