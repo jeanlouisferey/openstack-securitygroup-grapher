@@ -86,7 +86,7 @@ With osggrapherShowInstances: true, you'll have on your graph all the instances 
 
 ![Example](doc/Instances.png)
 
-## osggrapherShowInterfaces
+### osggrapherShowInterfaces
 
 With osggrapherShowInterfaces: true, you'll have on your graph all the network interfaces (with their ip addresses) using each security groups.
 
